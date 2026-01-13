@@ -1,4 +1,4 @@
-const BASE_URL = 'https://notes-api.dicoding.dev/v1';
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 function getAccessToken() {
   return localStorage.getItem('accessToken');
