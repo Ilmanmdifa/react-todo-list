@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MdLogout, MdDarkMode, MdLightMode } from "react-icons/md";
 import { IoLanguage } from "react-icons/io5";
 import { IoMdMenu } from "react-icons/io";
@@ -11,6 +11,29 @@ function Navigation({ onLogout, name }) {
   const { locale, toggleLocale } = useContext(LocaleContext);
   const { theme, toggleTheme } = useContext(ThemeContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (!dropdownOpen) {
+      return undefined;
+    }
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    function handleEscape(event) {
+      if (event.key === "Escape") {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [dropdownOpen]);
 
   const handleLogout = () => {
     onLogout();
@@ -36,8 +59,14 @@ function Navigation({ onLogout, name }) {
             {locale === "id" ? "Arsip" : "Archived"}
           </Link>
         </li>
-        <li className="dropdown">
-          <button onClick={toggleDropdown} className="dropdown-toggle">
+        <li className="dropdown" ref={dropdownRef}>
+          <button
+            onClick={toggleDropdown}
+            className="dropdown-toggle"
+            aria-expanded={dropdownOpen}
+            aria-haspopup="menu"
+            aria-label="Account menu"
+          >
             <IoMdMenu />
           </button>
           {dropdownOpen && (

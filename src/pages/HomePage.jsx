@@ -129,11 +129,11 @@ function HomePage() {
   );
 
   if (loading) {
-    return <p>{locale === "id" ? "Memuat catatan..." : "Loading notes..."}</p>;
+    return <p className="loading-text">{locale === "id" ? "Memuat catatan..." : "Loading notes..."}</p>;
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return <p className="form-error" role="alert">{error}</p>;
   }
 
   return (
