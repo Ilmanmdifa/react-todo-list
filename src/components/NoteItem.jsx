@@ -13,7 +13,7 @@ function NoteItem({ note, onArchive, onDelete, onUnarchive }) {
       <p className="note-item__createdAt">
         {showFormattedDate(note.createdAt)}
       </p>
-      <p className="note-item__body">{note.body}</p>
+      <p className="note-item__body note-item__body--clamped">{note.body}</p>
       <ArchiveButton
         note={note}
         onArchive={onArchive}

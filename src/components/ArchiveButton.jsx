@@ -7,6 +7,8 @@ function ArchiveButton({ note, onArchive, onUnarchive }) {
         <button
           onClick={() => onUnarchive(note.id)}
           className="action archive button-fly"
+          aria-label={`Unarchive note ${note.title}`}
+          title="Unarchive note"
         >
           <MdOutlineUnarchive />
         </button>
@@ -14,6 +16,8 @@ function ArchiveButton({ note, onArchive, onUnarchive }) {
         <button
           onClick={() => onArchive(note.id)}
           className="action archive button-fly"
+          aria-label={`Archive note ${note.title}`}
+          title="Archive note"
         >
           <MdOutlineArchive />
         </button>
@@ -25,6 +29,7 @@ function ArchiveButton({ note, onArchive, onUnarchive }) {
 ArchiveButton.propTypes = {
   note: PropTypes.shape({
     id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
     archived: PropTypes.bool.isRequired,
   }).isRequired,
   onArchive: PropTypes.func.isRequired,
