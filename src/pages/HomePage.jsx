@@ -4,7 +4,7 @@ import {
   unarchiveNote,
   deleteNote,
 } from "../utils/network-data";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AddButton from "../components/AddButton";
 import NoteList from "../components/NoteList";
 import SearchBar from "../components/SearchBar";
@@ -138,7 +138,12 @@ function HomePage() {
 
   return (
     <section className="homepage">
-      <h2>{locale === "id" ? "Catatan Aktif" : "Active Notes"}</h2>
+      <div className="homepage__header">
+        <h2>{locale === "id" ? "Catatan Aktif" : "Active Notes"}</h2>
+        <span className="homepage__count" aria-label={`${filteredNotes.length} notes`}>
+          {filteredNotes.length}
+        </span>
+      </div>
       <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
       {filteredNotes.length > 0 ? (
         <NoteList
@@ -148,11 +153,23 @@ function HomePage() {
           onUnarchive={handleUnarchive}
         />
       ) : (
-        <p>
-          {locale === "id"
-            ? "Tidak ada catatan aktif"
-            : "No active notes found"}
-        </p>
+        <div className="homepage__empty">
+          <p className="homepage__empty-icon" aria-hidden="true">📝</p>
+          <p>
+            {searchTerm
+              ? locale === "id"
+                ? `Tidak ada hasil untuk "${searchTerm}"`
+                : `No results for "${searchTerm}"`
+              : locale === "id"
+                ? "Tidak ada catatan aktif"
+                : "No active notes found"}
+          </p>
+          {!searchTerm && (
+            <Link to="/notes/new" className="homepage__empty-cta">
+              {locale === "id" ? "Buat catatan pertama" : "Create your first note"}
+            </Link>
+          )}
+        </div>
       )}
       <AddButton />
     </section>

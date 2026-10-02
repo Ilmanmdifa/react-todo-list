@@ -1,16 +1,15 @@
 import PropTypes from "prop-types";
-import { FaCheck } from "react-icons/fa";
 
-function SaveButton({ handleAddNote, disabled }) {
+function SaveButton({ handleAddNote, disabled, label }) {
   return (
     <div className="add-new-page__action">
       <button
-        className="action button-fly"
+        className="action action--labeled"
         onClick={handleAddNote}
         disabled={disabled}
-        aria-label="Save note"
+        aria-label={label}
       >
-        <FaCheck />
+        {disabled ? "..." : label}
       </button>
     </div>
   );
@@ -19,6 +18,12 @@ function SaveButton({ handleAddNote, disabled }) {
 SaveButton.propTypes = {
   handleAddNote: PropTypes.func.isRequired,
   disabled: PropTypes.bool,
+  label: PropTypes.string,
+};
+
+SaveButton.defaultProps = {
+  disabled: false,
+  label: "Simpan",
 };
 
 SaveButton.defaultProps = {
