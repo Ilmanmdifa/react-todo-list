@@ -79,7 +79,7 @@ function App() {
           <div className={`app-container logged ${theme}`}>
             <header>
               <h1>
-                <Link>
+                <Link to="/">
                   {locale === "id" ? "Aplikasi Catatan" : "Notes App"}
                 </Link>
               </h1>

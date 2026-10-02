@@ -1,30 +1,48 @@
-import { Link } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useContext, useEffect, useRef, useState } from "react";
-import { MdLogout, MdDarkMode, MdLightMode } from "react-icons/md";
+import { MdLogout, MdDarkMode, MdLightMode, MdExpandLess, MdExpandMore } from "react-icons/md";
 import { IoLanguage } from "react-icons/io5";
-import { IoMdMenu } from "react-icons/io";
 import LocaleContext from "../context/LocaleContext";
 import ThemeContext from "../context/ThemeContext";
 
 function Navigation({ onLogout, name }) {
   const { locale, toggleLocale } = useContext(LocaleContext);
   const { theme, toggleTheme } = useContext(ThemeContext);
+  const { pathname } = useLocation();
+  const activeLabel =
+    pathname === "/notes/new"
+      ? locale === "id"
+        ? "Tambah Catatan"
+        : "Add Note"
+      : pathname === "/notes/archived"
+        ? locale === "id"
+          ? "Arsip"
+          : "Archived"
+        : locale === "id"
+          ? "Beranda"
+          : "Home";
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const mobileNavRef = useRef(null);
 
   useEffect(() => {
-    if (!dropdownOpen) {
+    if (!dropdownOpen && !mobileOpen) {
       return undefined;
     }
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
       }
+      if (mobileNavRef.current && !mobileNavRef.current.contains(event.target)) {
+        setMobileOpen(false);
+      }
     }
     function handleEscape(event) {
       if (event.key === "Escape") {
         setDropdownOpen(false);
+        setMobileOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -33,7 +51,7 @@ function Navigation({ onLogout, name }) {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [dropdownOpen]);
+  }, [dropdownOpen, mobileOpen]);
 
   const handleLogout = () => {
     onLogout();
@@ -44,30 +62,57 @@ function Navigation({ onLogout, name }) {
   };
 
   return (
-    <nav className="navigation">
-      <ul>
+    <nav className="navigation" ref={mobileNavRef}>
+      <button
+        className="nav-burger"
+        onClick={() => setMobileOpen((v) => !v)}
+        aria-expanded={mobileOpen}
+        aria-label="Toggle navigation menu"
+      >
+        <span className="nav-burger__label">{activeLabel}</span>
+        {mobileOpen ? <MdExpandLess /> : <MdExpandMore />}
+      </button>
+      <ul className={mobileOpen ? "nav-links open" : "nav-links"}>
         <li>
-          <Link to="/">{locale === "id" ? "Beranda" : "Home"}</Link>
+          <NavLink
+            to="/"
+            end
+            onClick={() => setMobileOpen(false)}
+            className={({ isActive }) => (isActive ? "nav-active" : undefined)}
+          >
+            {locale === "id" ? "Beranda" : "Home"}
+          </NavLink>
         </li>
         <li>
-          <Link to="/notes/new">
+          <NavLink
+            to="/notes/new"
+            onClick={() => setMobileOpen(false)}
+            className={({ isActive }) => (isActive ? "nav-active" : undefined)}
+          >
             {locale === "id" ? "Tambah Catatan" : "Add Note"}
-          </Link>
+          </NavLink>
         </li>
         <li>
-          <Link to="/notes/archived">
+          <NavLink
+            to="/notes/archived"
+            onClick={() => setMobileOpen(false)}
+            className={({ isActive }) => (isActive ? "nav-active" : undefined)}
+          >
             {locale === "id" ? "Arsip" : "Archived"}
-          </Link>
+          </NavLink>
         </li>
-        <li className="dropdown" ref={dropdownRef}>
+      </ul>
+      <div className="dropdown account-menu" ref={dropdownRef}>
           <button
             onClick={toggleDropdown}
-            className="dropdown-toggle"
+            className="dropdown-toggle avatar-toggle"
             aria-expanded={dropdownOpen}
             aria-haspopup="menu"
             aria-label="Account menu"
           >
-            <IoMdMenu />
+            <span className="avatar" aria-hidden="true">
+              {(name || "?").trim().charAt(0).toUpperCase()}
+            </span>
           </button>
           {dropdownOpen && (
             <div className={`dropdown-menu ${theme}`}>
@@ -85,8 +130,7 @@ function Navigation({ onLogout, name }) {
               </button>
             </div>
           )}
-        </li>
-      </ul>
+        </div>
     </nav>
   );
 }

@@ -8,8 +8,17 @@ function AddNoteForm({ title, body, setTitle, setBody, handleAddNote, formError,
   const remainingChars = titleMaxLength - title.length;
 
   return (
-    <div className="add-new-page__input">
+    <div className="add-new-page__input add-new-page__card">
+      <div className="field-row">
+        <label className="field-label" htmlFor="note-title">
+          {locale === "id" ? "Judul" : "Title"}
+        </label>
+        <span className={`char-limit${remainingChars <= 5 ? " char-limit--warn" : ""}`}>
+          {locale === "id" ? "Sisa: " : "Left: "}{remainingChars}
+        </span>
+      </div>
       <input
+        id="note-title"
         type="text"
         placeholder={locale === "id" ? "Catatan rahasia" : "Secret note"}
         className="add-new-page__input__title"
@@ -18,10 +27,11 @@ function AddNoteForm({ title, body, setTitle, setBody, handleAddNote, formError,
         maxLength={titleMaxLength}
         aria-label={locale === "id" ? "Judul catatan" : "Note title"}
       />
-      <p className="char-limit">
-        {locale === "id" ? "Sisa karakter: " : "Characters left: "}{remainingChars}
-      </p>
+      <label className="field-label" htmlFor="note-body">
+        {locale === "id" ? "Isi catatan" : "Content"}
+      </label>
       <textarea
+        id="note-body"
         className="add-new-page__input__body"
         placeholder={
           locale === "id" ? "Sebenarnya saya adalah ..." : "I am actually ..."
@@ -31,7 +41,19 @@ function AddNoteForm({ title, body, setTitle, setBody, handleAddNote, formError,
         aria-label={locale === "id" ? "Isi catatan" : "Note body"}
       ></textarea>
       {formError && <p className="form-error" role="alert">❌ {formError}</p>}
-      <SaveButton handleAddNote={handleAddNote} disabled={isSubmitting} />
+      <SaveButton
+        handleAddNote={handleAddNote}
+        disabled={isSubmitting}
+        label={
+          isSubmitting
+            ? locale === "id"
+              ? "Menyimpan..."
+              : "Saving..."
+            : locale === "id"
+              ? "Simpan Catatan"
+              : "Save Note"
+        }
+      />
     </div>
   );
 }
