@@ -594,6 +594,29 @@ select {
   filter: brightness(0.92);
 }
 
+.load-more {
+  display: block;
+  margin: 16px auto 0;
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: 1px solid var(--border, var(--on-background-grey));
+  background-color: var(--surface, transparent);
+  color: var(--on-background);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.load-more:hover {
+  background-color: rgba(127, 127, 127, 0.15);
+}
+
+.load-more:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
 .note-item .action {
   font-size: 50px;
   width: 60px;

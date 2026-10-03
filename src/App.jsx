@@ -56,18 +56,21 @@ function App() {
   if (authedUser === null) {
     return (
       <Router>
-        <div className="note-app-login">
-          <title>Login Note App</title>
-          <main>
-            <Routes>
-              <Route
-                path="/*"
-                element={<LoginPage loginSuccess={onLoginSuccess} />}
-              />
-              <Route path="/register" element={<RegisterPage />} />
-            </Routes>
-          </main>
-        </div>
+        <LocaleContext.Provider value={localeContextValue}>
+          <ThemeContext.Provider value={themeContextValue}>
+            <div className="note-app-login">
+              <main>
+                <Routes>
+                  <Route
+                    path="/*"
+                    element={<LoginPage loginSuccess={onLoginSuccess} />}
+                  />
+                  <Route path="/register" element={<RegisterPage />} />
+                </Routes>
+              </main>
+            </div>
+          </ThemeContext.Provider>
+        </LocaleContext.Provider>
       </Router>
     );
   }
