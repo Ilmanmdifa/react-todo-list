@@ -16,6 +16,7 @@ function HomePage() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(12);
   const { locale } = useContext(LocaleContext);
   const navigate = useNavigate();
 
@@ -55,6 +56,15 @@ function HomePage() {
 
   const handleDelete = useCallback(
     async (id) => {
+      if (
+        !window.confirm(
+          locale === "id"
+            ? "Hapus catatan ini? Tindakan ini tidak bisa dibatalkan."
+            : "Delete this note? This cannot be undone."
+        )
+      ) {
+        return;
+      }
       try {
         const { error } = await deleteNote(id);
         if (error) {
@@ -144,14 +154,36 @@ function HomePage() {
           {filteredNotes.length}
         </span>
       </div>
-      <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+      <SearchBar
+        searchTerm={searchTerm}
+        onSearchChange={(value) => {
+          setSearchTerm(value);
+          setVisibleCount(12);
+        }}
+      />
       {filteredNotes.length > 0 ? (
-        <NoteList
-          notes={filteredNotes}
-          onDelete={handleDelete}
-          onArchive={handleArchive}
-          onUnarchive={handleUnarchive}
-        />
+        <>
+          <NoteList
+            notes={filteredNotes.slice(0, visibleCount)}
+            onDelete={handleDelete}
+            onArchive={handleArchive}
+            onUnarchive={handleUnarchive}
+          />
+          {visibleCount < filteredNotes.length && (
+            <button
+              className="load-more"
+              onClick={() => setVisibleCount((c) => c + 12)}
+            >
+              {locale === "id"
+                ? `Muat ${Math.min(12, filteredNotes.length - visibleCount)} lagi (sisa ${
+                    filteredNotes.length - visibleCount
+                  })`
+                : `Load ${Math.min(12, filteredNotes.length - visibleCount)} more (${
+                    filteredNotes.length - visibleCount
+                  } left)`}
+            </button>
+          )}
+        </>
       ) : (
         <div className="homepage__empty">
           <p className="homepage__empty-icon" aria-hidden="true">📝</p>

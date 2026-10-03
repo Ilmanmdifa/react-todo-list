@@ -1,13 +1,17 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { MdOutlineAlternateEmail } from "react-icons/md";
 import { TbEye, TbEyeClosed } from "react-icons/tb";
+import LocaleContext from "../context/LocaleContext";
 
 function LoginInput({ login }) {
+  const { locale } = useContext(LocaleContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [formError, setFormError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onEmailChangeHandler = (event) => {
     setEmail(event.target.value);
@@ -17,9 +21,28 @@ function LoginInput({ login }) {
     setPassword(event.target.value);
   };
 
-  const onSubmitHandler = (event) => {
+  const onSubmitHandler = async (event) => {
     event.preventDefault();
-    login({ email, password });
+    setFormError(null);
+    setIsSubmitting(true);
+    try {
+      const { error, message } = await login({ email, password });
+      if (error) {
+        // Sengaja generik: pesan spesifik API ("email not found" vs
+        // "password wrong") membocorkan email terdaftar ke penebak.
+        // Detail asli hanya di-log saat development.
+        if (import.meta.env.DEV) {
+          console.error(message);
+        }
+        setFormError(
+          locale === "id" ? "Email atau password salah." : "Wrong email or password."
+        );
+      }
+    } catch {
+      setFormError("Login failed. Check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   return (
     <form className="login-form" onSubmit={onSubmitHandler}>
@@ -59,7 +82,14 @@ function LoginInput({ login }) {
           {showPassword ? <TbEyeClosed /> : <TbEye />}
         </button>
       </div>
-      <button className="login-submit">Login</button>
+      <button className="login-submit" disabled={isSubmitting}>
+        {isSubmitting ? "Signing in..." : "Login"}
+      </button>
+      {formError && (
+        <p className="error-message" role="alert">
+          {formError}
+        </p>
+      )}
       <p className="signup-link">
         Belum punya akun? <Link to="/register">Sign up</Link>
       </p>

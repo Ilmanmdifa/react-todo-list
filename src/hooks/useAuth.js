@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { getUserLogged, putAccessToken } from "../utils/network-data";
 
 export function useAuth() {
-    const [authedUser, setAuthedUser] = useState("")
-    const [initializing, setInitializing] = useState("");
+    const [authedUser, setAuthedUser] = useState(null)
+    const [initializing, setInitializing] = useState(true);
 
     useEffect(() => {
         const fetchUser = async () => {

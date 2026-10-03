@@ -6,10 +6,11 @@ function RegisterPage() {
   const navigate = useNavigate();
 
   async function onRegisterHandler(user) {
-    const { error } = await register(user);
-    if (!error) {
+    const result = await register(user);
+    if (!result.error) {
       navigate("/");
     }
+    return result;
   }
 
   return (

@@ -8,6 +8,7 @@ function RegisterInput({ register }) {
   const [password, setPassword] = useState("");
   const [retryPassword, setRetryPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onNameChange = (event) => {
     setName(event.target.value);
@@ -32,7 +33,7 @@ function RegisterInput({ register }) {
     }
   };
 
-  const onSubmitHandler = (event) => {
+  const onSubmitHandler = async (event) => {
     event.preventDefault();
 
     if (password !== retryPassword) {
@@ -41,7 +42,21 @@ function RegisterInput({ register }) {
     }
 
     setError("");
-    register({ name, email, password });
+    setIsSubmitting(true);
+    try {
+      const { error: serverError, message } = await register({
+        name,
+        email,
+        password,
+      });
+      if (serverError) {
+        setError(message || "Register failed. Try again.");
+      }
+    } catch {
+      setError("Register failed. Check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -80,7 +95,9 @@ function RegisterInput({ register }) {
         />
       </div>
       {error && <p className="error-message">{error}</p>}
-      <button className="register-submit">Register</button>
+      <button className="register-submit" disabled={isSubmitting}>
+        {isSubmitting ? "Registering..." : "Register"}
+      </button>
       <p className="login-link">
         Kembali ke <Link to="/">Login</Link>
       </p>
